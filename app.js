@@ -75,10 +75,14 @@ app.get('/api/repos/:repositoryId/blob/:commitHash/:pathToFile([^/]*)?', (req, r
   const filePath = path.join(dirPath, repositoryId, pathToFile);
   const contentType = mime.contentType(path.extname(filePath));
   const dataCb = data => res.write(data);
+  const errCb = (error) => {
+    res.status(500);
+    res.json({ error });
+  };
   const closeCb = () => res.send();
 
   res.type(contentType);
-  gitService.getFileContent(dirPath, req.params, dataCb, closeCb);
+  gitService.getFileContent(dirPath, req.params, dataCb, errCb, closeCb);
 });
 
 app.delete('/api/repos/:repositoryId', async (req, res) => {

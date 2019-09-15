@@ -9,8 +9,14 @@ const promisifiedReadDir = promisify(fs.readdir);
 const getRepoList = dirPath => promisifiedReadDir(dirPath, 'utf8');
 
 const addRepo = (dirPath, { url }) => {
+  const CHILD_PROCESS_TIMEOUT = 60 * 10 ** 3;
   return new Promise((resolve, reject) => {
     const child = spawn('git', ['clone', url, '-q'], { cwd: dirPath });
+
+    setTimeout(() => {
+      child.kill();
+      reject('Timeout exceeded');
+    }, CHILD_PROCESS_TIMEOUT);
 
     child.stderr.on('data', error => reject(error.toString()));
     child.on('close', () => resolve());
@@ -75,7 +81,7 @@ const getRepoContent = (dirPath, { repositoryId, commitHash, path }) => {
   })
 };
 
-const getFileContent = (dirPath, { repositoryId, commitHash, pathToFile }, onDataCb, onCloseCb, onErrCb) => {
+const getFileContent = (dirPath, { repositoryId, commitHash, pathToFile }, onDataCb, onErrCb, onCloseCb) => {
   const child = spawn(
     'git',
     ['show', `${commitHash}:${pathToFile}`],
