@@ -77,11 +77,11 @@ app.get('/api/repos/:repositoryId/blob/:commitHash/:pathToFile([^/]*)?', (req, r
   const dataCb = data => res.write(data);
   const errCb = (error) => {
     res.status(500);
-    res.json({ error });
+    res.json({ error: error.toString() });
   };
   const closeCb = () => res.send();
 
-  res.type(contentType);
+  res.type(contentType || 'application/octet-stream');
   gitService.getFileContent(dirPath, req.params, dataCb, errCb, closeCb);
 });
 

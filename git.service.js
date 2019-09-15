@@ -35,7 +35,7 @@ const getCommitList = (dirPath, { repositoryId, commitHash }) => {
     let result = '';
 
     child.stdout.on('data', data => result += data);
-    child.stderr.on('data', error => reject(error));
+    child.stderr.on('data', error => reject(error.toString()));
     // slice removes last comma
     child.on('close', () => resolve(`[${result.slice(0, -1)}]`));
   });
@@ -53,7 +53,7 @@ const getCommitDiff = (dirPath, { repositoryId, commitHash }) => {
     let result = '';
 
     child.stdout.on('data', data => result += data);
-    child.stderr.on('data', error => reject(error));
+    child.stderr.on('data', error => reject(error.toString()));
     child.on('close', () => resolve(result));
   }));
 };
@@ -76,7 +76,7 @@ const getRepoContent = (dirPath, { repositoryId, commitHash, path }) => {
     let result = '';
 
     child.stdout.on('data', data => result += data);
-    child.stderr.on('data', error => reject(error));
+    child.stderr.on('data', error => reject(error.toString()));
     child.on('close', () => resolve(result.split('\n').filter(file => !!file)));
   })
 };
